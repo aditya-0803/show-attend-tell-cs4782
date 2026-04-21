@@ -91,12 +91,64 @@ def compute_bleu_nltk(
     return scores
 
 
-def compute_meteor(refs: Dict, hyps: Dict) -> float:
-    """METEOR via pycocoevalcap (requires Java)."""
+def _ensure_nltk_data() -> None:
+    """Make sure the NLTK corpora that METEOR needs are available."""
+    import nltk
+    needed = [
+        ("corpora/wordnet", "wordnet"),
+        ("corpora/omw-1.4", "omw-1.4"),
+        ("tokenizers/punkt", "punkt"),
+    ]
+    for resource, pkg in needed:
+        try:
+            nltk.data.find(resource)
+        except LookupError:
+            nltk.download(pkg, quiet=True)
+
+
+def compute_meteor_nltk(refs: Dict, hyps: Dict) -> float:
+    """METEOR via NLTK (pure Python — no Java, no JAR).
+
+    NLTK's ``meteor_score`` computes a sentence-level score given tokenized references
+    and a tokenized hypothesis. We average over the corpus for the final number, which
+    is the standard interpretation and what pycocoevalcap also does.
+    """
+    _ensure_nltk_data()
+    from nltk.translate.meteor_score import meteor_score
+
+    gts, res = _normalize_refs_hyps(refs, hyps)
+    total, count = 0.0, 0
+    for k in gts:
+        ref_tokens = [r.lower().split() for r in gts[k]]
+        hyp_tokens = res[k][0].lower().split()
+        if not hyp_tokens:
+            continue
+        try:
+            total += meteor_score(ref_tokens, hyp_tokens)
+            count += 1
+        except Exception:
+            # Rare edge cases (empty ref, unusual tokens) — skip silently.
+            continue
+    if count == 0:
+        return 0.0
+    return (total / count) * 100.0
+
+
+def compute_meteor_coco(refs: Dict, hyps: Dict) -> float:
+    """METEOR via pycocoevalcap (requires Java). Kept as a fallback."""
     from pycocoevalcap.meteor.meteor import Meteor
     gts, res = _normalize_refs_hyps(refs, hyps)
     score, _ = Meteor().compute_score(gts, res)
     return float(score) * 100.0
+
+
+def compute_meteor(refs: Dict, hyps: Dict) -> float:
+    """METEOR — prefers NLTK's pure-Python implementation; falls back to pycocoevalcap."""
+    try:
+        return compute_meteor_nltk(refs, hyps)
+    except Exception as e:
+        print(f"[metrics] NLTK METEOR failed ({e}); trying pycocoevalcap")
+        return compute_meteor_coco(refs, hyps)
 
 
 def compute_all_metrics(
