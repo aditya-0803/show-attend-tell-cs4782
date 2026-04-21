@@ -1,0 +1,50 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Project-specific
+# Large data and checkpoints should NOT be committed to git.
+data/coco2014/
+data/karpathy_splits/
+data/*.json
+!data/README.md
+
+# Precomputed features
+features/
+*.h5
+*.hdf5
+
+# Checkpoints and logs
+checkpoints/
+runs/
+logs/
+wandb/
+
+# Generated results (keep only final summary figures/tables)
+results/raw/
+results/checkpoints/
+*.pth
+*.pt
+*.ckpt
+
+# Jupyter
+.ipynb_checkpoints/

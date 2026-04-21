@@ -1,0 +1,17 @@
+# Core
+torch>=2.0
+torchvision>=0.15
+numpy>=1.24
+Pillow>=9.0
+tqdm>=4.65
+h5py>=3.8
+
+# Text / metrics
+nltk>=3.8
+pycocoevalcap>=1.2
+pycocotools>=2.0.7
+
+# Viz / utils
+matplotlib>=3.7
+scikit-image>=0.21
+tensorboard>=2.14
