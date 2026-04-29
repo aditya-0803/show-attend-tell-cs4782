@@ -142,13 +142,79 @@ def compute_meteor_coco(refs: Dict, hyps: Dict) -> float:
     return float(score) * 100.0
 
 
+def compute_meteor_java_batch(refs: Dict, hyps: Dict) -> float:
+    """METEOR via the official Java jar in batch mode (bypasses pycocoevalcap's
+    buggy streaming protocol that crashes on multi-float stats lines).
+
+    Reuses the ``meteor-1.5.jar`` and paraphrase data shipped by pycocoevalcap.
+    Returns scores on the same scale as Xu et al. (2015) — i.e. directly comparable
+    to the paper's METEOR numbers.
+    """
+    import os
+    import subprocess
+    import tempfile
+
+    import pycocoevalcap.meteor as _m
+    pkg_dir = os.path.dirname(_m.__file__)
+    jar = os.path.join(pkg_dir, "meteor-1.5.jar")
+    if not os.path.exists(jar):
+        raise FileNotFoundError(f"METEOR jar not found at {jar}")
+
+    gts, res = _normalize_refs_hyps(refs, hyps)
+    if not gts:
+        return 0.0
+    keys = list(gts.keys())
+    max_refs = max(len(gts[k]) for k in keys)
+
+    with tempfile.TemporaryDirectory() as td:
+        hyp_path = os.path.join(td, "hyp.txt")
+        ref_path = os.path.join(td, "ref.txt")
+        with open(hyp_path, "w", encoding="utf-8") as fh, \
+             open(ref_path, "w", encoding="utf-8") as fr:
+            for k in keys:
+                hyp = res[k][0].replace("\n", " ").replace("\r", " ").strip()
+                fh.write(hyp + "\n")
+                refs_k = [r.replace("\n", " ").replace("\r", " ").strip()
+                          for r in gts[k]]
+                # Pad to max_refs (METEOR expects a fixed number per segment).
+                while len(refs_k) < max_refs:
+                    refs_k.append(refs_k[0])
+                for r in refs_k:
+                    fr.write(r + "\n")
+
+        cmd = [
+            "java", "-Xmx2G", "-jar", jar,
+            hyp_path, ref_path,
+            "-l", "en", "-norm",
+            "-r", str(max_refs),
+        ]
+        env = os.environ.copy()
+        env.setdefault("LC_ALL", "C.UTF-8")
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, env=env, check=True,
+        )
+
+    for line in result.stdout.splitlines():
+        line = line.strip()
+        if line.startswith("Final score:"):
+            return float(line.split(":", 1)[1].strip()) * 100.0
+    raise RuntimeError(
+        f"Could not parse 'Final score:' from METEOR output:\n{result.stdout}"
+    )
+
+
 def compute_meteor(refs: Dict, hyps: Dict) -> float:
-    """METEOR — prefers NLTK's pure-Python implementation; falls back to pycocoevalcap."""
+    """METEOR — prefers Java (paper-comparable scale); falls back to NLTK if Java
+    or the jar is unavailable."""
     try:
-        return compute_meteor_nltk(refs, hyps)
+        return compute_meteor_java_batch(refs, hyps)
     except Exception as e:
-        print(f"[metrics] NLTK METEOR failed ({e}); trying pycocoevalcap")
-        return compute_meteor_coco(refs, hyps)
+        print(f"[metrics] Java METEOR failed ({e}); falling back to NLTK")
+        try:
+            return compute_meteor_nltk(refs, hyps)
+        except Exception as e2:
+            print(f"[metrics] NLTK METEOR also failed ({e2}); trying pycocoevalcap streaming")
+            return compute_meteor_coco(refs, hyps)
 
 
 def compute_all_metrics(
