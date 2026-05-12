@@ -104,7 +104,11 @@ Final metrics, attention visualizations, and sample captions will be placed in `
 
 ## 7. Conclusion
 
-TBD — will be written after final results are collected.
+We faithfully reproduce the soft-attention "Show, Attend and Tell" model on MS COCO, landing **within 0.5 BLEU-4** of the paper's reported result. The remaining gap is small and concentrated on word-choice metrics (BLEU-1, METEOR) — consistent with using a single training run and a different evaluation toolchain than the original Theano implementation, not with any architectural deviation.
+
+The qualitative results tell the more interesting story. When the model generates a content word, attention concentrates sharply on the corresponding image region; when it generates a function word, attention disperses across the image. This confirms the paper's central thesis that **learned visual attention is both a quality lever and an interpretability tool** — the same mechanism that produces better captions also exposes _why_ the model produced them. The failure cases reinforce the same point: when the model is wrong (e.g., calling a llama "a herd of sheep"), attention still localizes on the correct image region — the model is _looking at the right thing and labeling it wrong_, not looking at the wrong thing entirely.
+
+The single most important lesson from the reproduction was that **evaluation tooling matters**. The off-the-shelf NLTK METEOR returns scores roughly 1.7× larger than the paper's Java implementation; silently inflating a published number by that factor is exactly the kind of bug that undermines reproductions and is invisible without checking. We added a paper-comparable Java METEOR scorer (`code/recompute_meteor.py`) so this can't recur in this repo, and we recommend any future captioning project verify its METEOR pipeline against the paper's `meteor-1.5.jar` before reporting numbers.
 
 ## 8. References
 
