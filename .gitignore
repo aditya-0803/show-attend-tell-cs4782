@@ -48,3 +48,24 @@ results/checkpoints/
 
 # Jupyter
 .ipynb_checkpoints/
+
+
+# Large data / cached features (regeneratable)
+*.h5
+*.hdf5
+*.pt
+*.pth
+
+# Raw datasets (download separately)
+data/coco2014/
+data/karpathy_splits/
+features/
+
+# Local cached images
+saved_val_images/
+
+# Python / OS
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
