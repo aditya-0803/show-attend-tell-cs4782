@@ -1,6 +1,6 @@
 # Show, Attend and Tell — Re-implementation (CS 4782, Cornell, Spring 2026)
 
-A PyTorch re-implementation of the **soft attention** variant of Xu et al., *Show, Attend and Tell: Neural Image Caption Generation with Visual Attention* (ICML 2015), trained on MS COCO with the Karpathy splits.
+A PyTorch re-implementation of the **soft attention** variant of Xu et al., _Show, Attend and Tell: Neural Image Caption Generation with Visual Attention_ (ICML 2015), trained on MS COCO with the Karpathy splits.
 
 > **Status:** in progress (final repo and results will be finalized by May 12, 2026).
 
@@ -12,13 +12,13 @@ This repository is a course project for CS 4782 at Cornell. We re-implement the 
 
 We reproduce the **soft attention** MS COCO row from Table 1 of the paper:
 
-| Metric   | Paper | Ours |
-|----------|-------|------|
-| BLEU-1   | 70.7  | TBD  |
-| BLEU-2   | 49.2  | TBD  |
-| BLEU-3   | 34.4  | TBD  |
-| BLEU-4   | 24.3  | TBD  |
-| METEOR   | 23.90 | TBD  |
+| Metric | Paper | Ours |
+| ------ | ----- | ---- |
+| BLEU-1 | 70.7  | TBD  |
+| BLEU-2 | 49.2  | TBD  |
+| BLEU-3 | 34.4  | TBD  |
+| BLEU-4 | 24.3  | TBD  |
+| METEOR | 23.90 | TBD  |
 
 We chose soft attention (not hard) because it trains with standard backprop and is substantially more stable to reproduce than the REINFORCE-trained hard variant.
 
@@ -108,11 +108,11 @@ TBD — will be written after final results are collected.
 
 ## 8. References
 
-- Xu, K., Ba, J. L., Kiros, R., Cho, K., Courville, A., Salakhutdinov, R., Zemel, R., & Bengio, Y. (2015). *Show, Attend and Tell: Neural Image Caption Generation with Visual Attention.* ICML.
-- Lin, T.-Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Dollár, P., & Zitnick, C. L. (2014). *Microsoft COCO: Common Objects in Context.* ECCV.
-- Karpathy, A., & Fei-Fei, L. (2015). *Deep Visual-Semantic Alignments for Generating Image Descriptions.* CVPR.
-- Simonyan, K., & Zisserman, A. (2014). *Very Deep Convolutional Networks for Large-Scale Image Recognition* (VGG). arXiv:1409.1556.
-- Paszke et al. (2019). *PyTorch: An Imperative Style, High-Performance Deep Learning Library.* NeurIPS.
+- Xu, K., Ba, J. L., Kiros, R., Cho, K., Courville, A., Salakhutdinov, R., Zemel, R., & Bengio, Y. (2015). _Show, Attend and Tell: Neural Image Caption Generation with Visual Attention._ ICML.
+- Lin, T.-Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Dollár, P., & Zitnick, C. L. (2014). _Microsoft COCO: Common Objects in Context._ ECCV.
+- Karpathy, A., & Fei-Fei, L. (2015). _Deep Visual-Semantic Alignments for Generating Image Descriptions._ CVPR.
+- Simonyan, K., & Zisserman, A. (2014). _Very Deep Convolutional Networks for Large-Scale Image Recognition_ (VGG). arXiv:1409.1556.
+- Paszke et al. (2019). _PyTorch: An Imperative Style, High-Performance Deep Learning Library._ NeurIPS.
 - `pycocoevalcap` — https://github.com/salaniz/pycocoevalcap
 - NLTK — https://www.nltk.org
 
