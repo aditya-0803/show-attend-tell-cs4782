@@ -2,8 +2,6 @@
 
 A PyTorch re-implementation of the **soft attention** variant of Xu et al., _Show, Attend and Tell: Neural Image Caption Generation with Visual Attention_ (ICML 2015), trained on MS COCO with the Karpathy splits.
 
-> **Status:** in progress (final repo and results will be finalized by May 12, 2026).
-
 ## 1. Introduction
 
 This repository is a course project for CS 4782 at Cornell. We re-implement the soft-attention image-captioning model of Xu et al. (2015) and evaluate it on MS COCO 2014, aiming to reproduce the BLEU/METEOR numbers reported in Table 1 of the paper. The model combines a frozen VGG-16 CNN encoder with an LSTM decoder that, at every time step, computes a soft attention over a 14×14 grid of image features to decide which region to "look at" when generating the next word.
